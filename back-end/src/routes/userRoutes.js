@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const authenticateJWT = require('../middleware/authMiddleware');  // Import middleware
 
 // Route để tạo người dùng mới (Create)
 router.post('/', userController.createUser);
 
 // Route để lấy tất cả người dùng (Read)
 router.get('/', userController.getUsers);
+
+router.get('/profile', authenticateJWT, userController.getUserProfile);
 
 // Route để lấy người dùng theo ID (Read)
 router.get('/:id', userController.getUserById);
