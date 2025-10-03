@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
 // Tạo người dùng mới
@@ -61,4 +63,42 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, getUsers, getUserById, updateUser, deleteUser };
+const getUserProfile = async (req, res) => {
+  try {
+    // req.user.id được lấy từ JWT token qua middleware authenticateJWT
+    const userId = req.user.userId;
+    console.log('userId:', userId);
+
+    // Tìm user trong database, loại bỏ password_hash khỏi kết quả
+    const user = await User.findById(userId).select('-password_hash');
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Không tìm thấy user' 
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Lấy thông tin profile thành công',
+      data: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      }
+    });
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Lỗi server khi lấy thông tin profile',
+      error: error.message 
+    });
+  }
+};
+
+module.exports = { createUser, getUsers, getUserById, updateUser, deleteUser, getUserProfile };

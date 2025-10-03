@@ -17,10 +17,12 @@ const storeRoutes = require('./routes/storeRoutes');
 const couponRoutes = require('./routes/couponRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-
+const authRoutes = require('./routes/authRoutes');
 // Sử dụng các routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/stores', storeRoutes);
+app.use('/api/auth', authRoutes);
+
 // Export app để sử dụng trong bin/www
 module.exports = app;
