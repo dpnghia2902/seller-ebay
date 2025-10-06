@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-     "lint": "eslint src --fix"
+    "lint": "eslint src --fix"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +21,10 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.2",
     "morgan": "~1.9.1",
-    "pug": "2.0.0-beta11"
+    "pug": "2.0.0-beta11",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
@@ -32,5 +35,3 @@
     "prettier": "^3.6.2"
   }
 }
-
-
