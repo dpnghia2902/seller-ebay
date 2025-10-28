@@ -29,6 +29,7 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const authRoutes = require('./routes/authRoutes');
 const shopRoutes = require('./routes/shopRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -44,5 +45,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/stores', storeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/shops', shopRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/reports', reportRoutes);
 // Export app để sử dụng trong bin/www
 module.exports = app;
