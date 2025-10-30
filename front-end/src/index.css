@@ -1,4 +1,8 @@
-/* Reset cơ bản */
+/* Base reset */
+* {
+  box-sizing: border-box;
+}
+
 html,
 body,
 #root {
@@ -16,7 +20,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Font code */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

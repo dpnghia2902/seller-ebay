@@ -1,0 +1,465 @@
+/* Modern Dashboard Layout */
+.modern-dashboard-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  transition: grid-template-columns 0.3s ease;
+  background-color: #f8fafc;
+}
+
+.modern-dashboard-layout.collapsed {
+  grid-template-columns: 80px 1fr;
+}
+
+/* Modern Sidebar */
+.modern-sidebar {
+  background: linear-gradient(180deg, #e67e22, #d35400);
+  color: white;
+  padding: 24px 20px;
+  position: relative;
+  z-index: 10;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.modern-sidebar.collapsed {
+  padding: 20px 12px;
+}
+
+.modern-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  min-height: 48px;
+}
+
+.modern-sidebar.collapsed .modern-sidebar-header {
+  justify-content: center;
+}
+
+.modern-brand {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  transition: opacity 0.3s ease;
+}
+
+.modern-sidebar.collapsed .modern-brand {
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+}
+
+.modern-hamburger {
+  width: 40px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modern-hamburger:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.modern-hamburger span {
+  width: 18px;
+  height: 2px;
+  background: white;
+  display: block;
+  border-radius: 1px;
+}
+
+.modern-sidebar.collapsed .modern-hamburger {
+  width: 36px;
+  height: 28px;
+  margin: 0;
+}
+
+/* Modern Navigation */
+.modern-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modern-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.modern-nav-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(2px);
+}
+
+.modern-nav-item.active {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modern-sidebar.collapsed .modern-nav-item {
+  justify-content: center;
+  padding: 16px 12px;
+}
+
+.modern-sidebar.collapsed .modern-nav-label {
+  display: none;
+}
+
+.modern-nav-icon {
+  font-size: 18px;
+  min-width: 20px;
+}
+
+/* Modern Main Content */
+.modern-main-content {
+  padding: 32px;
+  background-color: #f8fafc;
+  overflow-y: auto;
+}
+
+.modern-content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Modern Header */
+.modern-main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modern-page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #e67e22;
+  margin: 0;
+}
+
+.modern-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.modern-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modern-dropdown-arrow {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* Modern Stats Grid */
+.modern-stats-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.modern-overall-sales-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.modern-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.modern-card-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+.modern-info-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: help;
+}
+
+.modern-card-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.modern-chart-container {
+  height: 280px;
+  background: #fef7ed;
+  border-radius: 12px;
+  border: 1px solid #fed7aa;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-line-chart {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+}
+
+.modern-stats-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modern-stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+.modern-stat-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.modern-stat-icon {
+  font-size: 24px;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modern-stat-text {
+  flex: 1;
+}
+
+.modern-stat-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.modern-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.modern-stat-subtitle {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Modern Products Section */
+.modern-products-section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.modern-section-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+}
+
+.modern-table-container {
+  overflow-x: auto;
+}
+
+.modern-product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modern-product-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.modern-product-table td {
+  padding: 20px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.modern-product-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modern-product-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  overflow: hidden;
+}
+
+.modern-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modern-product-info {
+  flex: 1;
+}
+
+.modern-product-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.modern-product-color {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.modern-price-cell {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.modern-sold-cell {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.modern-status-cell {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.modern-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #059669;
+}
+
+.modern-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.modern-loading-cell {
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+  padding: 40px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .modern-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modern-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .modern-sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+  
+  .modern-sidebar.open {
+    left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .modern-main-content {
+    padding: 20px;
+  }
+  
+  .modern-page-title {
+    font-size: 24px;
+  }
+  
+  .modern-card-value {
+    font-size: 28px;
+  }
+  
+  .modern-stat-value {
+    font-size: 20px;
+  }
+}
