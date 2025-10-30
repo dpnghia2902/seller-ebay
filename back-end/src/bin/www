@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require('dotenv').config(); // ✅ Thêm dòng này để load file .env sớm
 
 /**
  * Module dependencies.

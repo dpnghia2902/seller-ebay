@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -26,7 +27,8 @@ const userSchema = new mongoose.Schema({
   updated_at: {
     type: Date,
     default: Date.now
-  }
+  },
+  addresses: [{ type: Schema.Types.ObjectId, ref: 'Address' }]
 });
 
 module.exports = mongoose.model('User', userSchema, 'users');
