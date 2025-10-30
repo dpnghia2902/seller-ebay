@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node ./src/bin/www",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src --fix"
   },
@@ -21,6 +22,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.2",
     "morgan": "~1.9.1",
+    "multer": "^2.0.2",
     "pug": "2.0.0-beta11",
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8",
