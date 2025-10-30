@@ -1,4 +1,4 @@
-const API_BASE = "/api"; // Vite proxy sends this to local backend
+const API_BASE = import.meta.env?.VITE_API_BASE || "/api"; // configurable via .env, defaults to Vite proxy
 
 export async function apiGet(path) {
   const res = await fetch(`${API_BASE}${path}`);
