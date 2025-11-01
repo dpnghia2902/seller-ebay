@@ -58,16 +58,9 @@ app.use('/api/stores', storeRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/auth', authRoutes);
-<<<<<<< HEAD
-// app.use('/api/coupons', couponRoutes);
-// app.use('/api/reviews', reviewRoutes);
-// app.use('/api/orders', orderRoutes);
-
-=======
 app.use('/api/shops', shopRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reports', reportRoutes);
->>>>>>> develop
 // Export app để sử dụng trong bin/www
 module.exports = app;
