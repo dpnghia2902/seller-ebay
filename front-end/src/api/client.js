@@ -91,3 +91,42 @@ export async function deleteInventoryProduct(productId) {
   if (!res.ok) throw new Error(`DELETE /inventory/${productId} failed`);
   return res.json();
 }
+
+/**
+ * Adjust inventory stock quantity (add or remove stock)
+ * @param {string|number} productId - Product ID
+ * @param {Object} adjustment - Stock adjustment details
+ * @param {number} adjustment.stockAdjustment - Quantity to adjust (positive for add, negative for remove)
+ * @param {string} adjustment.reason - Reason for adjustment ("Stock In", "Stock Out", "Damaged", "Return", etc.)
+ * @param {string} [adjustment.notes] - Optional notes
+ * @returns {Promise<Object>} Updated product with new stock level
+ */
+export async function adjustInventoryStock(productId, adjustment) {
+  const res = await fetch(`${API_BASE}/inventory/${productId}/adjust-stock`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(adjustment)
+  });
+  if (!res.ok) throw new Error(`POST /inventory/${productId}/adjust-stock failed`);
+  return res.json();
+}
+
+/**
+ * Get inventory stock history/logs
+ * @param {string|number} productId - Product ID
+ * @param {Object} params - Query parameters (page, limit, startDate, endDate)
+ * @returns {Promise<Object>} { logs: Array, total: number }
+ */
+export async function getInventoryStockHistory(productId, params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return apiGet(`/inventory/${productId}/stock-history${query ? '?' + query : ''}`);
+}
+
+/**
+ * Get low stock alert products
+ * @param {number} threshold - Stock threshold (default: 10)
+ * @returns {Promise<Array>} Array of products with low stock
+ */
+export async function getLowStockProducts(threshold = 10) {
+  return apiGet(`/inventory/low-stock?threshold=${threshold}`);
+}
