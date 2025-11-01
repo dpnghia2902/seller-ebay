@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Login from "./pages/login";
+import ModernDashboard from "./components/Dashboard/ModernDashboard";
 import "./App.css";
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
       <Login />
     </div>
   );
+  return <ModernDashboard />;
 }
 
 export default App;
