@@ -5,61 +5,230 @@ const User = require('../models/userModel');
 // Tạo người dùng mới
 const createUser = async (req, res) => {
   try {
-    const { email, password_hash, role, name } = req.body;
-    const newUser = new User({ email, password_hash, role, name });
+    const { email, password, role, name } = req.body;
+
+    // Kiểm tra email đã tồn tại
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    // Validate role
+    if (!['buyer', 'seller', 'admin'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role specified' });
+    }
+
+    // Validate required fields
+    if (!email || !password || !name) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Hash mật khẩu trước khi lưu
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(password, salt);
+
+    // Tạo người dùng mới
+    const newUser = new User({
+      email,
+      password_hash,
+      role,
+      name
+    });
+
     await newUser.save();
-    res.status(201).json(newUser);  // Trả về người dùng mới tạo
+
+    // Tạo JWT token
+    const token = jwt.sign(
+      { userId: newUser._id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Trả về thông tin người dùng (không bao gồm password_hash) và token
+    const userResponse = {
+      _id: newUser._id,
+      email: newUser.email,
+      name: newUser.name,
+      role: newUser.role,
+      created_at: newUser.created_at
+    };
+
+    res.status(201).json({
+      message: 'User created successfully',
+      user: userResponse,
+      token
+    });
   } catch (err) {
-    res.status(400).json({ message: 'Error creating user', error: err.message });
+    console.error('Error in createUser:', err);
+    res.status(500).json({ message: 'Error creating user', error: err.message });
   }
 };
 
-// Lấy tất cả người dùng
+// Lấy tất cả người dùng (chỉ admin mới có quyền)
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find();  // Truy vấn tất cả người dùng
-    res.status(200).json(users);
+    // Kiểm tra quyền admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin only.' });
+    }
+
+    // Thêm phân trang và sắp xếp
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sort = req.query.sort || '-created_at';
+    const search = req.query.search || '';
+
+    const query = search 
+      ? { 
+          $or: [
+            { email: { $regex: search, $options: 'i' } },
+            { name: { $regex: search, $options: 'i' } }
+          ]
+        }
+      : {};
+
+    const users = await User
+      .find(query)
+      .select('-password_hash')
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const total = await User.countDocuments(query);
+
+    res.status(200).json({
+      users,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalUsers: total,
+        hasMore: page * limit < total
+      }
+    });
   } catch (err) {
-    res.status(400).json({ message: 'Error fetching users', error: err.message });
+    console.error('Error in getUsers:', err);
+    res.status(500).json({ message: 'Error fetching users', error: err.message });
   }
 };
 
 // Lấy thông tin người dùng theo ID
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);  // Tìm người dùng theo ID
+    // Kiểm tra quyền: admin có thể xem tất cả, user chỉ có thể xem thông tin của mình
+    if (req.user.role !== 'admin' && req.user.userId !== req.params.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const user = await User
+      .findById(req.params.id)
+      .select('-password_hash')
+      .populate('addresses');
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
     res.status(200).json(user);
   } catch (err) {
-    res.status(400).json({ message: 'Error fetching user', error: err.message });
+    console.error('Error in getUserById:', err);
+    res.status(500).json({ message: 'Error fetching user', error: err.message });
   }
 };
 
 // Cập nhật thông tin người dùng
 const updateUser = async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    // Kiểm tra quyền: admin có thể cập nhật tất cả, user chỉ có thể cập nhật thông tin của mình
+    if (req.user.role !== 'admin' && req.user.userId !== req.params.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const { password, email, role, ...updateData } = req.body;
+
+    // Chỉ admin mới có thể thay đổi role
+    if (role && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only admin can change user roles' });
+    }
+
+    // Nếu có cập nhật email, kiểm tra email đã tồn tại
+    if (email) {
+      const existingUser = await User.findOne({ email, _id: { $ne: req.params.id } });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already exists' });
+      }
+      updateData.email = email;
+    }
+
+    // Nếu có cập nhật mật khẩu
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password_hash = await bcrypt.hash(password, salt);
+    }
+
+    // Nếu admin thay đổi role
+    if (req.user.role === 'admin' && role) {
+      updateData.role = role;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...updateData,
+        updated_at: Date.now()
+      },
+      { new: true }
+    ).select('-password_hash');
+
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(200).json(updatedUser);
+
+    res.status(200).json({
+      message: 'User updated successfully',
+      user: updatedUser
+    });
   } catch (err) {
-    res.status(400).json({ message: 'Error updating user', error: err.message });
+    console.error('Error in updateUser:', err);
+    res.status(500).json({ message: 'Error updating user', error: err.message });
   }
 };
 
-// Xóa người dùng
+// Xóa người dùng (chỉ admin)
 const deleteUser = async (req, res) => {
   try {
+    // Kiểm tra quyền admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin only.' });
+    }
+
+    // Không cho phép admin tự xóa chính mình
+    if (req.user.userId === req.params.id) {
+      return res.status(400).json({ message: 'Cannot delete your own admin account' });
+    }
+
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(200).json({ message: 'User deleted successfully' });
+
+    // Xóa các dữ liệu liên quan (addresses, etc.)
+    await Promise.all([
+      // Xóa địa chỉ của user
+      mongoose.model('Address').deleteMany({ _id: { $in: deletedUser.addresses } })
+      // Có thể thêm xóa các dữ liệu khác liên quan đến user ở đây
+    ]);
+
+    res.status(200).json({ 
+      message: 'User and related data deleted successfully',
+      deletedUser: {
+        id: deletedUser._id,
+        email: deletedUser.email,
+        name: deletedUser.name
+      }
+    });
   } catch (err) {
-    res.status(400).json({ message: 'Error deleting user', error: err.message });
+    console.error('Error in deleteUser:', err);
+    res.status(500).json({ message: 'Error deleting user', error: err.message });
   }
 };
 

@@ -1,24 +1,33 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "User Management API",
-    "description": "API Documentation - Tự động generate bằng swagger-autogen",
-    "version": "1.0.0"
+    "title": "E-commerce API Documentation",
+    "version": "1.0.0",
+    "description": "API documentation cho hệ thống E-commerce",
+    "contact": {
+      "name": "API Support",
+      "email": "support@example.com"
+    }
   },
   "host": "localhost:3000",
   "basePath": "/",
   "tags": [
     {
       "name": "Users",
-      "description": "Endpoints liên quan đến quản lý người dùng"
+      "description": "Endpoints quản lý người dùng"
     },
     {
-      "name": "Auth",
-      "description": "Endpoints liên quan đến xác thực"
+      "name": "Products",
+      "description": "Endpoints quản lý sản phẩm"
+    },
+    {
+      "name": "Orders",
+      "description": "Endpoints quản lý đơn hàng"
     }
   ],
   "schemes": [
-    "http"
+    "http",
+    "https"
   ],
   "securityDefinitions": {
     "bearerAuth": {
@@ -58,7 +67,7 @@
                 "email": {
                   "example": "any"
                 },
-                "password_hash": {
+                "password": {
                   "example": "any"
                 },
                 "role": {
@@ -77,17 +86,45 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -133,11 +170,14 @@
           "200": {
             "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -149,6 +189,27 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "role": {
+                  "example": "any"
+                },
+                "updateData": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -158,8 +219,14 @@
           "400": {
             "description": "Bad Request"
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -180,100 +247,14 @@
           "400": {
             "description": "Bad Request"
           },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/api/products/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/api/products/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
-          }
-        }
-      },
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -281,12 +262,41 @@
     "/api/stores/": {
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "address": {
+                  "example": "any"
+                },
+                "banner_url": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -339,11 +349,14 @@
           "200": {
             "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -366,6 +379,344 @@
           },
           "404": {
             "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/products/{storeId}": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "initial_quantity": {
+                  "example": "any"
+                },
+                "location": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/products/{storeId}/{productId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/products/{storeId}/{productId}/hide": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/inventory/{storeId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/inventory/{inventoryId}": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "inventoryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quantity": {
+                  "example": "any"
+                },
+                "location": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/inventory/{storeId}/{productId}/stock-adjust": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "adjustment": {
+                  "example": "any"
+                },
+                "location": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/dashboard/summary": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/dashboard/sales-monthly": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "months",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/dashboard/top-products": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -448,6 +799,26 @@
           }
         }
       }
+    },
+    "/api/reports/generate": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -456,7 +827,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "example": "123abc"
+          "example": "507f1f77bcf86cd799439011"
         },
         "email": {
           "type": "string",
@@ -466,11 +837,15 @@
           "type": "string",
           "example": "Nguyen Van A"
         },
-        "createdAt": {
+        "role": {
+          "type": "string",
+          "example": "buyer"
+        },
+        "created_at": {
           "type": "string",
           "example": "2024-01-01T00:00:00.000Z"
         },
-        "updatedAt": {
+        "updated_at": {
           "type": "string",
           "example": "2024-01-01T00:00:00.000Z"
         }
@@ -490,6 +865,10 @@
         "name": {
           "type": "string",
           "example": "Nguyen Van A"
+        },
+        "role": {
+          "type": "string",
+          "example": "buyer"
         }
       }
     },
@@ -503,6 +882,88 @@
         "email": {
           "type": "string",
           "example": "newuser@example.com"
+        }
+      }
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "507f1f77bcf86cd799439012"
+        },
+        "name": {
+          "type": "string",
+          "example": "iPhone 15"
+        },
+        "description": {
+          "type": "string",
+          "example": "Điện thoại iPhone 15"
+        },
+        "price": {
+          "type": "number",
+          "example": 25000000
+        },
+        "stock": {
+          "type": "number",
+          "example": 100
+        },
+        "category": {
+          "type": "string",
+          "example": "Electronics"
+        },
+        "seller_id": {
+          "type": "string",
+          "example": "507f1f77bcf86cd799439011"
+        },
+        "created_at": {
+          "type": "string",
+          "example": "2024-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "507f1f77bcf86cd799439013"
+        },
+        "user_id": {
+          "type": "string",
+          "example": "507f1f77bcf86cd799439011"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "product_id": {
+                "type": "string",
+                "example": "507f1f77bcf86cd799439012"
+              },
+              "quantity": {
+                "type": "number",
+                "example": 2
+              },
+              "price": {
+                "type": "number",
+                "example": 25000000
+              }
+            }
+          }
+        },
+        "total_amount": {
+          "type": "number",
+          "example": 50000000
+        },
+        "status": {
+          "type": "string",
+          "example": "pending"
+        },
+        "created_at": {
+          "type": "string",
+          "example": "2024-01-01T00:00:00.000Z"
         }
       }
     },

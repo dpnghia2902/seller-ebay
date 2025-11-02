@@ -41,7 +41,6 @@ const inventoryRoutes = require('./routes/inventoryRoutes');
 // const reviewRoutes = require('./routes/reviewRoutes');
 // const orderRoutes = require('./routes/orderRoutes');
 const authRoutes = require('./routes/authRoutes');
-const shopRoutes = require('./routes/shopRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
@@ -60,7 +59,6 @@ app.use('/api/products', productRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/shops', shopRoutes);
 // app.use('/api/coupons', couponRoutes);
 // app.use('/api/orders', orderRoutes);
 app.use('/api/reports', reportRoutes);
