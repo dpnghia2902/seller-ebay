@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
+const authenticateJWT = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
 
@@ -32,22 +33,22 @@ const upload = multer({
 });
 
 // Routes for Product with Store ID in the path
-// POST /api/products/:storeId
-router.post('/:storeId', upload.array('images', 5), productController.createProduct);
+// POST /api/products/:storeId - Tạo sản phẩm (CẦN JWT)
+router.post('/:storeId', authenticateJWT, upload.array('images', 5), productController.createProduct);
 
-// GET /api/products/:storeId
+// GET /api/products/:storeId - Xem danh sách sản phẩm (Public - không cần JWT)
 router.get('/:storeId', productController.getStoreProducts);
 
-// GET /api/products/:storeId/:productId
+// GET /api/products/:storeId/:productId - Xem chi tiết sản phẩm (Public - không cần JWT)
 router.get('/:storeId/:productId', productController.getStoreProductById);
 
-// PUT /api/products/:storeId/:productId
-router.put('/:storeId/:productId', upload.array('images', 5), productController.updateProduct);
+// PUT /api/products/:storeId/:productId - Cập nhật sản phẩm (CẦN JWT)
+router.put('/:storeId/:productId', authenticateJWT, upload.array('images', 5), productController.updateProduct);
 
-// PATCH /api/products/:storeId/:productId/hide
-router.patch('/:storeId/:productId/hide', productController.toggleProductVisibility);
+// PATCH /api/products/:storeId/:productId/hide - Ẩn/hiện sản phẩm (CẦN JWT)
+router.patch('/:storeId/:productId/hide', authenticateJWT, productController.toggleProductVisibility);
 
-// DELETE /api/products/:storeId/:productId
-router.delete('/:storeId/:productId', productController.deleteProduct);
+// DELETE /api/products/:storeId/:productId - Xóa sản phẩm (CẦN JWT)
+router.delete('/:storeId/:productId', authenticateJWT, productController.deleteProduct);
 
 module.exports = router;
