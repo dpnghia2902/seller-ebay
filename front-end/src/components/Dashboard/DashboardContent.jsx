@@ -197,30 +197,34 @@ export default function DashboardContent() {
 
   useEffect(() => {
     async function load() {
+      setLoading(true);
+      const fallbackProducts = [
+        { id: 1, name: "Iphone 17 Pro Max 1TB", color: "Orange", price: 1199, sold: 30, status: "In stock" },
+        { id: 2, name: "Iphone 17 Pro Max 1TB", color: "Orange", price: 1199, sold: 50, status: "In stock" },
+        { id: 3, name: "Iphone 17 Pro Max 1TB", color: "Orange", price: 1199, sold: 20, status: "In stock" },
+      ];
       try {
         const [tp, sum, sales] = await Promise.all([
           getTopProducts().catch(() => null),
           getSummary().catch(() => null),
           getMonthlySales().catch(() => null),
         ]);
-        if (tp && Array.isArray(tp.products)) setProducts(tp.products);
+        if (tp && Array.isArray(tp.products) && tp.products.length > 0) {
+          setProducts(tp.products);
+        } else {
+          setProducts(fallbackProducts);
+        }
         if (sum) setSummary(sum);
         if (Array.isArray(sales)) setMonthlySales(sales);
       } catch (error) {
         console.error("Error loading dashboard:", error);
+        setProducts(fallbackProducts);
       } finally {
-        if (!products.length) {
-          setProducts([
-            { id: 1, name: "Iphone 17 Pro Max 1TB", color: "Orange", price: 1199, sold: 30, status: "In stock" },
-            { id: 2, name: "Iphone 17 Pro Max 1TB", color: "Orange", price: 1199, sold: 50, status: "In stock" },
-            { id: 3, name: "Iphone 17 Pro Max 1TB", color: "Orange", price: 1199, sold: 20, status: "In stock" },
-          ]);
-        }
         setLoading(false);
       }
     }
     load();
-  }, [products.length]);
+  }, []);
 
   const totalSales = monthlySales.reduce((acc, b) => acc + b.value, 0);
 

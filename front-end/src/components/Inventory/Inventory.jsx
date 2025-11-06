@@ -259,11 +259,6 @@ export default function Inventory() {
         <button className="pagination-btn">»</button>
       </div>
 
-      {/* Floating Add Button */}
-      <button className="fab-add" aria-label="Add product">
-        +
-      </button>
-
       {/* Adjust Stock Modal */}
       {adjustModal.show && (
         <div className="modal-overlay" onClick={() => setAdjustModal({ ...adjustModal, show: false })}>

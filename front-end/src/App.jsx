@@ -3,6 +3,7 @@ import Layout from "./components/Layout/Layout";
 import DashboardContent from "./components/Dashboard/DashboardContent";
 import Orders from "./components/Orders/Orders";
 import Inventory from "./components/Inventory/Inventory";
+import Products from "./components/Products/Products";
 import Login from "./pages/login";
 import "./App.css";
 
@@ -23,12 +24,7 @@ function App() {
       case "orders":
         return <Orders />;
       case "products":
-        return (
-          <div className="products-section">
-            <h2 className="section-title">Products</h2>
-            <p>Products page coming soon...</p>
-          </div>
-        );
+        return <Products />;
       case "inventory":
         return <Inventory />;
       case "profile":
