@@ -27,7 +27,17 @@ const storeSchema = new mongoose.Schema({
   updated_at: {
     type: Date,
     default: Date.now
-  }
+  },
+  address: {                 // Nhúng trực tiếp địa chỉ shop
+    full_name: String,
+    phone: String,
+    street: String,
+    ward: String,
+    district: String,
+    city: String,
+    postal_code: String,
+    country: String
+  },
 });
 
 module.exports = mongoose.model('Store', storeSchema, 'stores');
