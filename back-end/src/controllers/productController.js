@@ -13,6 +13,11 @@ const createProduct = async (req, res) => {
       return res.status(404).json({ message: 'Store not found' });
     }
 
+    // Kiểm tra quyền sở hữu store (chỉ owner mới được tạo sản phẩm)
+    if (store.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: 'You do not have permission to add products to this store' });
+    }
+
     // Handle images from multer
     const images = req.files ? req.files.map(file => file.path) : [];
 
@@ -88,6 +93,17 @@ const updateProduct = async (req, res) => {
   try {
     const { storeId, productId } = req.params;
 
+    // Verify store exists and check ownership
+    const store = await Store.findById(storeId);
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
+    }
+
+    // Kiểm tra quyền sở hữu store
+    if (store.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: 'You do not have permission to update products in this store' });
+    }
+
     // Verify product belongs to store
     const product = await Product.findOne({ _id: productId, store_id: storeId });
     if (!product) {
@@ -124,6 +140,17 @@ const toggleProductVisibility = async (req, res) => {
   try {
     const { storeId, productId } = req.params;
 
+    // Verify store exists and check ownership
+    const store = await Store.findById(storeId);
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
+    }
+
+    // Kiểm tra quyền sở hữu store
+    if (store.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: 'You do not have permission to modify products in this store' });
+    }
+
     const product = await Product.findOne({ _id: productId, store_id: storeId });
     if (!product) {
       return res.status(404).json({ message: 'Product not found in this store' });
@@ -146,6 +173,17 @@ const toggleProductVisibility = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const { storeId, productId } = req.params;
+
+    // Verify store exists and check ownership
+    const store = await Store.findById(storeId);
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
+    }
+
+    // Kiểm tra quyền sở hữu store
+    if (store.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: 'You do not have permission to delete products from this store' });
+    }
 
     const product = await Product.findOne({ _id: productId, store_id: storeId });
     if (!product) {
