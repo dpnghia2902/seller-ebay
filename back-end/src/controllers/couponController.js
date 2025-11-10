@@ -1,17 +1,21 @@
 const Coupon = require('../models/couponModel');
+const authenticateJWT = require('../auth/authMiddleware');
 
-// Tạo voucher
-exports.createCoupon = async (req, res) => {
-  try {
-    const coupon = new Coupon(req.body);
-    await coupon.save();
-    res.status(201).json(coupon);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+// Tạo voucher (CẦN JWT)
+exports.createCoupon = [
+  authenticateJWT,
+  async (req, res) => {
+    try {
+      const coupon = new Coupon(req.body);
+      await coupon.save();
+      res.status(201).json(coupon);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
-};
+];
 
-// Lấy vourcher theo ID
+// Lấy voucher theo ID (KHÔNG cần JWT)
 exports.getCouponById = async (req, res) => {
   try {
     const coupon = await Coupon.findById(req.params.id);
@@ -22,8 +26,7 @@ exports.getCouponById = async (req, res) => {
   }
 };
 
-
-// Lấy danh sách voucher
+// Lấy danh sách voucher (KHÔNG cần JWT)
 exports.getAllCoupons = async (req, res) => {
   try {
     const coupons = await Coupon.find();
@@ -33,13 +36,15 @@ exports.getAllCoupons = async (req, res) => {
   }
 };
 
-// Xóa voucher
-exports.deleteCoupon = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Coupon.findByIdAndDelete(id);
-    res.json({ message: 'Coupon deleted' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+// Xóa voucher (CẦN JWT)
+exports.deleteCoupon = [
+  authenticateJWT,
+  async (req, res) => {
+    try {
+      await Coupon.findByIdAndDelete(req.params.id);
+      res.json({ message: 'Coupon deleted' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
-};
+];
