@@ -1,20 +1,22 @@
 import { useState } from "react";
+import Layout from "./components/Layout/Layout";
+import DashboardContent from "./components/Dashboard/DashboardContent";
+import Orders from "./components/Orders/Orders";
+import Inventory from "./components/Inventory/Inventory";
+import Products from "./components/Products/Products";
 import Login from "./pages/login";
-import Dashboard from "./components/Dashboard/Dashboard";
 import ModernDashboard from "./components/Dashboard/ModernDashboard";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
+  const [count, setCount] = useState(0);
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
+    <div>
+      <Login />
+    </div>
   );
-  return <ModernDashboard />;
 }
 
 export default App;

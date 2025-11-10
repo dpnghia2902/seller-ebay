@@ -186,7 +186,7 @@ function ModernProductTable({ products, loading }) {
   );
 }
 
-export default function ModernDashboard() {
+export default function ModernDashboard({ onNavigate }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -246,23 +246,23 @@ export default function ModernDashboard() {
         </div>
         
         <nav className="modern-sidebar-nav">
-          <button className="modern-nav-item active">
+          <button className="modern-nav-item active" onClick={() => onNavigate && onNavigate("dashboard")}>
             <span className="modern-nav-icon">📊</span>
             <span className="modern-nav-label">Dashboard</span>
           </button>
-          <button className="modern-nav-item">
+          <button className="modern-nav-item" onClick={() => onNavigate && onNavigate("orders")}>
             <span className="modern-nav-icon">🛒</span>
             <span className="modern-nav-label">Orders</span>
           </button>
-          <button className="modern-nav-item">
+          <button className="modern-nav-item" onClick={() => onNavigate && onNavigate("products")}>
             <span className="modern-nav-icon">📦</span>
             <span className="modern-nav-label">Products</span>
           </button>
-          <button className="modern-nav-item">
+          <button className="modern-nav-item" onClick={() => onNavigate && onNavigate("inventory")}>
             <span className="modern-nav-icon">🏷️</span>
             <span className="modern-nav-label">Inventory</span>
           </button>
-          <button className="modern-nav-item">
+          <button className="modern-nav-item" onClick={() => onNavigate && onNavigate("profile")}>
             <span className="modern-nav-icon">👤</span>
             <span className="modern-nav-label">Profile</span>
           </button>
