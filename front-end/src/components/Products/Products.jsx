@@ -93,18 +93,28 @@ export default function Products() {
         };
         const data = await getProducts(params);
         if (data && Array.isArray(data.products)) {
-          setProducts(data.products);
-          setTotalPages(data.totalPages || 32);
+          // Map backend _id to frontend id and handle image URLs
+          const mappedProducts = data.products.map(p => ({
+            ...p,
+            id: p._id || p.id,
+            image_url: p.images?.[0] || "/api/placeholder/60/60",
+            // Ensure status is properly formatted
+            status: p.is_hidden ? "Hidden" : "Available"
+          }));
+          setProducts(mappedProducts);
+          setTotalPages(data.totalPages || 1);
         }
       } catch (error) {
         console.error("Failed to load products:", error);
-        // Keep mock data if API fails - don't update state
+        // Show error message to user
+        alert("Failed to load products. Please check your connection and try again.");
       } finally {
         setLoading(false);
       }
     }
-    // Only load if we want to fetch from API, otherwise use mock data
-    // loadProducts();
+    
+    // Load products from API
+    loadProducts();
   }, [currentPage, searchTerm, statusFilter]);
 
   // Close dropdowns when clicking outside
@@ -132,17 +142,14 @@ export default function Products() {
   const handleStatusChange = async (productId, newStatus) => {
     try {
       await updateProductStatus(productId, newStatus);
+      // Update local state
       setProducts(products.map(p => 
-        p.id === productId ? { ...p, status: newStatus } : p
+        p.id === productId ? { ...p, status: newStatus, is_hidden: newStatus === "Hidden" } : p
       ));
       setShowStatusDropdown(null);
     } catch (error) {
       console.error("Failed to update status:", error);
-      // Update UI optimistically even if API fails
-      setProducts(products.map(p => 
-        p.id === productId ? { ...p, status: newStatus } : p
-      ));
-      setShowStatusDropdown(null);
+      alert("Failed to update product status. Please try again.");
     }
   };
 
@@ -155,8 +162,7 @@ export default function Products() {
       setProducts(products.filter(p => p.id !== productId));
     } catch (error) {
       console.error("Failed to delete product:", error);
-      // Remove from UI optimistically even if API fails
-      setProducts(products.filter(p => p.id !== productId));
+      alert("Failed to delete product. Please try again.");
     }
   };
 
@@ -615,15 +621,18 @@ export default function Products() {
                   className="btn-publish"
                   onClick={async () => {
                     try {
-                      await createProduct({
+                      const newProduct = await createProduct({
                         title: formData.title,
                         description: formData.description,
                         category: formData.category,
                         price: parseFloat(formData.price),
+                        sku: formData.sku || `SKU-${Date.now()}`,
                         condition: formData.condition,
                         status: formData.hideFromList ? "Hidden" : "Available",
                         image_url: "/api/placeholder/60/60"
                       });
+                      
+                      // Close modal and reset form
                       setShowAddModal(false);
                       setFormData({
                         title: "",
@@ -634,8 +643,19 @@ export default function Products() {
                         hideFromList: false,
                         images: []
                       });
-                      // Reload products
-                      window.location.reload();
+                      
+                      // Add new product to list instead of reload
+                      if (newProduct) {
+                        const mappedProduct = {
+                          ...newProduct,
+                          id: newProduct._id || newProduct.id,
+                          image_url: newProduct.images?.[0] || "/api/placeholder/60/60",
+                          status: newProduct.is_hidden ? "Hidden" : "Available"
+                        };
+                        setProducts([mappedProduct, ...products]);
+                      }
+                      
+                      alert("Product published successfully!");
                     } catch (error) {
                       console.error("Failed to create product:", error);
                       alert("Failed to publish product. Please try again.");
