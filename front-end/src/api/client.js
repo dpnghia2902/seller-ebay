@@ -1,7 +1,49 @@
 const API_BASE = import.meta.env?.VITE_API_BASE || "/api"; // configurable via .env, defaults to Vite proxy
 
+/**
+ * Get authentication token from localStorage
+ * @returns {string|null} JWT token or null
+ */
+function getAuthToken() {
+  try {
+    const authUser = localStorage.getItem('authUser');
+    if (authUser) {
+      const user = JSON.parse(authUser);
+      return user.accessToken;
+    }
+  } catch (error) {
+    console.error('Error getting auth token:', error);
+  }
+  return null;
+}
+
+/**
+ * Get headers with authentication
+ * @param {Object} additionalHeaders - Additional headers to include
+ * @returns {Object} Headers object with Authorization
+ */
+function getAuthHeaders(additionalHeaders = {}) {
+  const token = getAuthToken();
+  const headers = {
+    ...additionalHeaders
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
+}
+
+/**
+ * Helper function for GET requests with authentication
+ * @param {string} path - API endpoint path
+ * @returns {Promise<Object>} Response data
+ */
 export async function apiGet(path) {
-  const res = await fetch(`${API_BASE}${path}`);
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error(`GET ${path} failed`);
   return res.json();
 }
@@ -31,7 +73,7 @@ export async function getOrderById(orderId) {
 export async function updateOrderStatus(orderId, status) {
   const res = await fetch(`${API_BASE}/orders/${orderId}/status`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ status })
   });
   if (!res.ok) throw new Error(`PUT /orders/${orderId}/status failed`);
@@ -54,7 +96,7 @@ export async function getInventoryById(productId) {
 export async function createInventoryProduct(productData) {
   const res = await fetch(`${API_BASE}/inventory`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(productData)
   });
   if (!res.ok) throw new Error('POST /inventory failed');
@@ -65,7 +107,7 @@ export async function createInventoryProduct(productData) {
 export async function updateInventoryProduct(productId, productData) {
   const res = await fetch(`${API_BASE}/inventory/${productId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(productData)
   });
   if (!res.ok) throw new Error(`PUT /inventory/${productId} failed`);
@@ -76,7 +118,7 @@ export async function updateInventoryProduct(productId, productData) {
 export async function updateInventoryStatus(productId, status) {
   const res = await fetch(`${API_BASE}/inventory/${productId}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ status })
   });
   if (!res.ok) throw new Error(`PATCH /inventory/${productId}/status failed`);
@@ -86,7 +128,8 @@ export async function updateInventoryStatus(productId, status) {
 
 export async function deleteInventoryProduct(productId) {
   const res = await fetch(`${API_BASE}/inventory/${productId}`, {
-    method: 'DELETE'
+    method: 'DELETE',
+    headers: getAuthHeaders()
   });
   if (!res.ok) throw new Error(`DELETE /inventory/${productId} failed`);
   return res.json();
@@ -104,7 +147,7 @@ export async function deleteInventoryProduct(productId) {
 export async function adjustInventoryStock(productId, adjustment) {
   const res = await fetch(`${API_BASE}/inventory/${productId}/adjust-stock`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(adjustment)
   });
   if (!res.ok) throw new Error(`POST /inventory/${productId}/adjust-stock failed`);
@@ -159,7 +202,7 @@ export async function getProductById(productId) {
 export async function createProduct(productData) {
   const res = await fetch(`${API_BASE}/products`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(productData)
   });
   if (!res.ok) throw new Error('POST /products failed');
@@ -175,7 +218,7 @@ export async function createProduct(productData) {
 export async function updateProduct(productId, productData) {
   const res = await fetch(`${API_BASE}/products/${productId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(productData)
   });
   if (!res.ok) throw new Error(`PUT /products/${productId} failed`);
@@ -191,7 +234,7 @@ export async function updateProduct(productId, productData) {
 export async function updateProductStatus(productId, status) {
   const res = await fetch(`${API_BASE}/products/${productId}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ status })
   });
   if (!res.ok) throw new Error(`PATCH /products/${productId}/status failed`);
@@ -205,7 +248,8 @@ export async function updateProductStatus(productId, status) {
  */
 export async function deleteProduct(productId) {
   const res = await fetch(`${API_BASE}/products/${productId}`, {
-    method: 'DELETE'
+    method: 'DELETE',
+    headers: getAuthHeaders()
   });
   if (!res.ok) throw new Error(`DELETE /products/${productId} failed`);
   return res.json();
@@ -222,6 +266,7 @@ export async function uploadProductImage(imageFile) {
   
   const res = await fetch(`${API_BASE}/products/upload-image`, {
     method: 'POST',
+    headers: getAuthHeaders(), // Don't set Content-Type for FormData
     body: formData
   });
   if (!res.ok) throw new Error('POST /products/upload-image failed');
@@ -236,7 +281,7 @@ export async function uploadProductImage(imageFile) {
 export async function saveProductDraft(productData) {
   const res = await fetch(`${API_BASE}/products/draft`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ ...productData, draft: true })
   });
   if (!res.ok) throw new Error('POST /products/draft failed');
