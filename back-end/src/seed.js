@@ -950,6 +950,149 @@
 
     console.log('📋 Seeded orders:', orders.length, 'orders created');
 
+    // 3.9. Seed Reviews
+    const ReviewSchema = new Schema(
+      {
+        orderId: { type: Schema.Types.ObjectId, ref: 'Order', required: true, index: true },
+        listingId: { type: Schema.Types.ObjectId, ref: 'Listing', required: true, index: true },
+        buyerId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+        buyerName: String,
+        buyerUsername: String,
+        sellerId: { type: Schema.Types.ObjectId, ref: 'SellerProfile', required: true, index: true },
+        storeId: { type: Schema.Types.ObjectId, ref: 'Store', index: true },
+        rating: { type: Number, required: true, min: 1, max: 5, index: true },
+        title: String,
+        comment: { type: String, maxlength: 5000 },
+        photos: [String],
+        status: {
+          type: String,
+          enum: ['published', 'hidden', 'removed', 'pending_moderation'],
+          default: 'published',
+          index: true,
+        },
+        sellerResponse: {
+          message: { type: String, maxlength: 5000 },
+          respondedAt: Date,
+          updatedAt: Date,
+        },
+        isReported: { type: Boolean, default: false },
+        reportedReason: String,
+        reportedAt: Date,
+        helpfulVotes: { type: Number, default: 0 },
+        notHelpfulVotes: { type: Number, default: 0 },
+        verifiedPurchase: { type: Boolean, default: true },
+        reviewDate: { type: Date, default: Date.now, index: true },
+        ipAddress: String,
+        deviceInfo: String,
+      },
+      { timestamps: true }
+    );
+
+    const Review = mongoose.model('Review', ReviewSchema);
+
+    // Get delivered orders for reviews
+    const deliveredOrders = orders.filter(o => o.status === 'delivered');
+    
+    const reviews = await Review.insertMany([
+      {
+        orderId: deliveredOrders[0]._id,
+        listingId: deliveredOrders[0].listingId,
+        buyerId: deliveredOrders[0].buyerId,
+        buyerName: deliveredOrders[0].buyerName,
+        buyerUsername: deliveredOrders[0].buyerUsername,
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        rating: 5,
+        title: 'Excellent product, fast shipping!',
+        comment: 'The headphones arrived quickly and work perfectly. Great sound quality and comfortable to wear. Highly recommend this seller!',
+        status: 'published',
+        sellerResponse: {
+          message: 'Thank you for your positive feedback! We\'re glad you\'re happy with your purchase. If you need any assistance, please don\'t hesitate to contact us.',
+          respondedAt: daysAgo(1),
+          updatedAt: daysAgo(1),
+        },
+        helpfulVotes: 12,
+        notHelpfulVotes: 0,
+        verifiedPurchase: true,
+        reviewDate: daysAgo(1),
+      },
+      {
+        orderId: deliveredOrders[1]?._id || orders[2]._id,
+        listingId: deliveredOrders[1]?.listingId || orders[2].listingId,
+        buyerId: deliveredOrders[1]?.buyerId || orders[2].buyerId,
+        buyerName: deliveredOrders[1]?.buyerName || orders[2].buyerName,
+        buyerUsername: deliveredOrders[1]?.buyerUsername || orders[2].buyerUsername,
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        rating: 4,
+        title: 'Good quality, but shipping was a bit slow',
+        comment: 'The product itself is good quality and matches the description. However, shipping took longer than expected. Overall satisfied with the purchase.',
+        status: 'published',
+        helpfulVotes: 5,
+        notHelpfulVotes: 1,
+        verifiedPurchase: true,
+        reviewDate: daysAgo(2),
+      },
+      {
+        orderId: orders[1]._id,
+        listingId: orders[1].listingId,
+        buyerId: orders[1].buyerId,
+        buyerName: orders[1].buyerName,
+        buyerUsername: orders[1].buyerUsername,
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        rating: 3,
+        title: 'Average product',
+        comment: 'The item works but not as good as I expected. The noise cancellation feature is okay but not great. Packaging could be better.',
+        status: 'published',
+        helpfulVotes: 2,
+        notHelpfulVotes: 0,
+        verifiedPurchase: true,
+        reviewDate: daysAgo(3),
+      },
+      {
+        orderId: orders[0]._id,
+        listingId: orders[0].listingId,
+        buyerId: orders[0].buyerId,
+        buyerName: orders[0].buyerName,
+        buyerUsername: orders[0].buyerUsername,
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        rating: 2,
+        title: 'Not satisfied with the product',
+        comment: 'The product arrived damaged and the quality is not what was described. Customer service was slow to respond. Would not recommend.',
+        status: 'hidden',
+        sellerResponse: {
+          message: 'We apologize for the inconvenience. We have reached out to you directly to resolve this issue. Please check your messages.',
+          respondedAt: daysAgo(0),
+          updatedAt: daysAgo(0),
+        },
+        helpfulVotes: 1,
+        notHelpfulVotes: 3,
+        verifiedPurchase: true,
+        reviewDate: daysAgo(5),
+      },
+      {
+        orderId: orders[2]._id,
+        listingId: orders[2].listingId,
+        buyerId: orders[2].buyerId,
+        buyerName: orders[2].buyerName,
+        buyerUsername: orders[2].buyerUsername,
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        rating: 5,
+        title: 'Perfect! Exceeded expectations',
+        comment: 'Amazing product quality! Fast shipping and excellent packaging. The seller was very professional and responsive. Will definitely buy again!',
+        status: 'published',
+        helpfulVotes: 8,
+        notHelpfulVotes: 0,
+        verifiedPurchase: true,
+        reviewDate: daysAgo(4),
+      },
+    ]);
+
+    console.log('⭐ Seeded reviews:', reviews.length, 'reviews created');
+
     console.log('✅ DONE SEEDING. Users password = "password123"');
   }
 

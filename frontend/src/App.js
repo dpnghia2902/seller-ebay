@@ -13,6 +13,7 @@ import VerificationForm from './pages/seller/VerificationForm';
 import StoreSubscription from './pages/seller/StoreSubscription';
 import StoreSetup from './pages/seller/StoreSetup';
 import Orders from './pages/seller/Orders';
+import SellerReviews from './pages/seller/SellerReviews';
 
 function App() {
     return (
@@ -55,6 +56,14 @@ function App() {
                             element={
                                 <ProtectedRoute requireSeller requireVerified>
                                     <Orders />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/seller/reviews"
+                            element={
+                                <ProtectedRoute requireSeller requireVerified>
+                                    <SellerReviews />
                                 </ProtectedRoute>
                             }
                         />

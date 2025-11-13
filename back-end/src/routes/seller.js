@@ -88,4 +88,16 @@ router.get('/orders/:orderId', auth, orderController.getOrderById);
 router.put('/orders/:orderId/status', auth, orderController.updateOrderStatus);
 router.post('/orders/:orderId/tracking', auth, orderController.addTracking);
 
+// Review management routes
+const reviewController = require('../controllers/reviewController');
+const sellerCheck = require('../middleware/sellerCheck');
+
+router.get('/reviews', auth, sellerCheck, reviewController.getSellerReviews);
+router.get('/reviews/statistics', auth, sellerCheck, reviewController.getReviewStatistics);
+router.post('/reviews/:reviewId/respond', auth, sellerCheck, reviewController.respondToReview);
+router.put('/reviews/:reviewId/response', auth, sellerCheck, reviewController.updateReviewResponse);
+router.post('/reviews/:reviewId/hide', auth, sellerCheck, reviewController.hideReview);
+router.post('/reviews/:reviewId/unhide', auth, sellerCheck, reviewController.unhideReview);
+router.post('/reviews/:reviewId/report', auth, sellerCheck, reviewController.reportReview);
+
 module.exports = router;
