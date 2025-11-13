@@ -103,8 +103,7 @@ const SellerDashboard = () => {
                         >
                             Store
                         </button>
-                        <button className="pb-4 text-gray-600 hover:text-gray-900">
-                            onClick={() => navigate('/seller/reviews')}
+                        <button onClick={() => navigate('/seller/reviews')} className="pb-4 text-gray-600 hover:text-gray-900">
                             Review
                         </button>
                         <button className="pb-4 text-gray-600 hover:text-gray-900">

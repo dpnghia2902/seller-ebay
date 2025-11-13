@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 const Navbar = () => {
-  const { user, logout, isAuthenticated, isSeller } = useAuth();
+  const { user, logout, isAuthenticated, isSeller ,isVerified} = useAuth();
   const navigate = useNavigate();
   const handleLogout = () => {
     logout();
@@ -29,8 +29,10 @@ const Navbar = () => {
                 {isAuthenticated ? (
                     <>
                       <button onClick={() =>{
-                      if (isSeller) {
-                      navigate('/seller/store/subscription');}
+                      if (!isVerified) {
+                      navigate('/seller/store/subscription');} else {
+                        navigate('/seller');
+                      }
                       }
                       } className="hover:text-blue-600"
                       >

@@ -2,16 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // Mock API - replace with actual API calls
-const api = {
-    get: async (url) => {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-        if (url === '/listing/my-listings') {
-            return { data: [] };
-        }
-        return { data: [] };
-    }
-};
+import api from '../../services/api';
 
 const SellerListingsPage = () => {
     const navigate = useNavigate();
@@ -28,8 +19,10 @@ const SellerListingsPage = () => {
     const loadListings = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/listing/my-listings');
-            setListings(response.data);
+
+            const listingsRes = await api.get('/listing/my-listings');
+            setListings(listingsRes.data);
+
         } catch (error) {
             console.error('Error loading listings:', error);
         } finally {
