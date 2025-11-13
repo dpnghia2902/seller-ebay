@@ -56,9 +56,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <svg className="w-24 h-10" viewBox="0 0 100 40" fill="none">
-                <text x="0" y="30" fontSize="28" fontWeight="bold" fill="#e53238">eBay</text>
-              </svg>
+              <img src="/img_share-default.jpg" alt="eBay" className="h-10 w-auto" />
             </Link>
 
             {/* Search Bar */}

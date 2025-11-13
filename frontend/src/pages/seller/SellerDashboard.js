@@ -204,9 +204,12 @@ const SellerDashboard = () => {
                     <button className="w-full text-left px-4 py-2 hover:bg-gray-50 rounded">
                         Active
                     </button>
-                    <button className="w-full text-left px-4 py-2 hover:bg-gray-50 rounded">
+                    <Link
+                        to="/seller/orders"
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded"
+                    >
                         Orders
-                    </button>
+                    </Link>
                     <button className="w-full text-left px-4 py-2 hover:bg-gray-50 rounded">
                         Unsold
                     </button>
