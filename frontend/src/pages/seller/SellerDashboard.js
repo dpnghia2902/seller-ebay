@@ -79,7 +79,10 @@ const SellerDashboard = () => {
                         <button className="pb-4 border-b-2 border-blue-600 font-semibold text-blue-600">
                             Overview
                         </button>
-                        <button className="pb-4 text-gray-600 hover:text-gray-900">
+                        <button
+
+                            onClick={() => navigate('/seller/orders')}
+                            className="pb-4 text-gray-600 hover:text-gray-900">
                             Orders
                         </button>
                         <button

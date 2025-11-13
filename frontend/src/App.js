@@ -15,6 +15,7 @@ import StoreSetup from './pages/seller/StoreSetup';
 import ListItemStart from './pages/seller/ListItemStart';
 import SellerListings from './pages/seller/SellerListings';
 import SellerListingsPage from './pages/seller/SellerListingsPage';
+import Orders from './pages/seller/Orders';
 
 function App() {
     return (
@@ -49,6 +50,14 @@ function App() {
                             element={
                                 <ProtectedRoute requireSeller requireVerified>
                                     <ListingForm />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/seller/orders"
+                            element={
+                                <ProtectedRoute requireSeller requireVerified>
+                                    <Orders />
                                 </ProtectedRoute>
                             }
                         />

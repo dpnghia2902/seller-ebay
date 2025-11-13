@@ -257,6 +257,83 @@
     { timestamps: true }
   );
 
+  // Order
+  const OrderSchema = new Schema(
+    {
+      orderNumber: { type: String, unique: true, index: true },
+      buyerId: { type: Schema.Types.ObjectId, ref: 'User', index: true },
+      buyerName: String,
+      buyerUsername: String,
+      sellerId: { type: Schema.Types.ObjectId, ref: 'SellerProfile', index: true },
+      storeId: { type: Schema.Types.ObjectId, ref: 'Store', index: true },
+      listingId: { type: Schema.Types.ObjectId, ref: 'Listing' },
+      listingTitle: String,
+      listingImage: String,
+      customSku: String,
+      variationDetails: {
+        sku: String,
+        attributes: [{ name: String, value: String }]
+      },
+      pricing: {
+        itemPrice: Number,
+        quantity: { type: Number, default: 1 },
+        subtotal: Number,
+        shippingCost: { type: Number, default: 0 },
+        tax: { type: Number, default: 0 },
+        total: Number,
+        currency: { type: String, default: 'USD' }
+      },
+      shippingAddress: {
+        fullName: String,
+        phone: String,
+        street: String,
+        ward: String,
+        district: String,
+        city: String,
+        postalCode: String,
+        country: String
+      },
+      tracking: {
+        carrier: String,
+        trackingNumber: String,
+        shippedDate: Date,
+        estimatedDelivery: Date,
+        actualDelivery: Date
+      },
+      status: {
+        type: String,
+        enum: ['awaiting_payment', 'awaiting_shipment', 'shipped', 'delivered', 'returned', 'refunded', 'cancelled', 'delivery_failed'],
+        default: 'awaiting_payment',
+        index: true
+      },
+      paymentStatus: {
+        type: String,
+        enum: ['pending', 'paid', 'failed', 'refunded'],
+        default: 'pending'
+      },
+      paymentMethod: String,
+      paymentDate: Date,
+      purchaseDate: { type: Date, default: Date.now, index: true },
+      paymentDueDate: Date,
+      buyerNotes: String,
+      sellerNotes: String,
+      isGift: { type: Boolean, default: false },
+      isPriority: { type: Boolean, default: false },
+      returnRequest: {
+        requested: { type: Boolean, default: false },
+        reason: String,
+        requestDate: Date,
+        status: String
+      },
+      refundInfo: {
+        amount: Number,
+        reason: String,
+        refundDate: Date
+      }
+    },
+    { timestamps: true }
+  );
+
   // -----------------------
   // 2. TẠO MODEL
   // -----------------------
@@ -268,6 +345,7 @@
   const Category = mongoose.model('Category', CategorySchema);
   const InventoryItem = mongoose.model('InventoryItem', InventoryItemSchema);
   const Listing = mongoose.model('Listing', ListingSchema);
+  const Order = mongoose.model('Order', OrderSchema);
 
   // -----------------------
   // 3. HÀM SEED
@@ -571,6 +649,306 @@
       inventorySkus: [inventory1.sku, inventory2.sku],
       listingIds: [listing1._id.toString(), listing2._id.toString()],
     });
+
+    // 3.8. Seed Orders
+    const now = Date.now();
+    const daysAgo = (days) => new Date(now - days * 24 * 60 * 60 * 1000);
+    
+    const orders = await Order.insertMany([
+      {
+        orderNumber: '25-09016-24731',
+        buyerId: buyerUser._id,
+        buyerName: 'Pamela Wilson',
+        buyerUsername: 'pammy5501',
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        listingId: listing1._id,
+        listingTitle: 'Das elektrische Kabel 2 Kerne 1mm-1,5mm der weiße oder schwarze Flexibele',
+        listingImage: 'https://example.com/products/cable.jpg',
+        customSku: 'cable_2',
+        pricing: {
+          itemPrice: 1.00,
+          quantity: 1,
+          subtotal: 1.00,
+          shippingCost: 0,
+          tax: 0,
+          total: 1.07,
+          currency: 'USD'
+        },
+        shippingAddress: {
+          fullName: 'Pamela Wilson',
+          phone: '555-0123',
+          street: '123 Main St',
+          city: 'Los Angeles',
+          postalCode: '32808-1348',
+          country: 'United States'
+        },
+        status: 'awaiting_shipment',
+        paymentStatus: 'paid',
+        paymentMethod: 'PayPal',
+        paymentDate: daysAgo(1),
+        purchaseDate: daysAgo(1),
+      },
+      {
+        orderNumber: '25-09016-24732',
+        buyerId: buyerUser._id,
+        buyerName: 'John Smith',
+        buyerUsername: 'johnsmith88',
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        listingId: listing2._id,
+        listingTitle: listing2.title,
+        listingImage: 'https://example.com/products/hph-0002-1.png',
+        customSku: inventory2.sku,
+        pricing: {
+          itemPrice: 499000,
+          quantity: 1,
+          subtotal: 499000,
+          shippingCost: 30000,
+          tax: 0,
+          total: 529000,
+          currency: 'VND'
+        },
+        shippingAddress: {
+          fullName: 'John Smith',
+          phone: '0909123456',
+          street: '456 Tech Ave',
+          ward: 'Ward 5',
+          district: 'District 1',
+          city: 'Ho Chi Minh',
+          postalCode: '70000',
+          country: 'Vietnam'
+        },
+        tracking: {
+          carrier: 'Giao Hang Nhanh',
+          trackingNumber: 'GHN123456789',
+          shippedDate: daysAgo(3),
+          estimatedDelivery: daysAgo(1),
+        },
+        status: 'shipped',
+        paymentStatus: 'paid',
+        paymentMethod: 'Credit Card',
+        paymentDate: daysAgo(5),
+        purchaseDate: daysAgo(5),
+      },
+      {
+        orderNumber: '25-09016-24733',
+        buyerId: buyerUser._id,
+        buyerName: 'Alice Johnson',
+        buyerUsername: 'alice_j',
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        listingId: listing1._id,
+        listingTitle: listing1.title,
+        listingImage: 'https://example.com/products/hph-0001-1.png',
+        customSku: inventory1.sku,
+        pricing: {
+          itemPrice: 299000,
+          quantity: 2,
+          subtotal: 598000,
+          shippingCost: 30000,
+          tax: 0,
+          total: 628000,
+          currency: 'VND'
+        },
+        shippingAddress: {
+          fullName: 'Alice Johnson',
+          phone: '0912345678',
+          street: '789 Market St',
+          ward: 'Ward 10',
+          district: 'District 3',
+          city: 'Ho Chi Minh',
+          postalCode: '70000',
+          country: 'Vietnam'
+        },
+        tracking: {
+          carrier: 'Vietnam Post',
+          trackingNumber: 'VNP987654321',
+          shippedDate: daysAgo(10),
+          estimatedDelivery: daysAgo(3),
+          actualDelivery: daysAgo(2),
+        },
+        status: 'delivered',
+        paymentStatus: 'paid',
+        paymentMethod: 'COD',
+        paymentDate: daysAgo(2),
+        purchaseDate: daysAgo(12),
+      },
+      {
+        orderNumber: '25-09016-24734',
+        buyerId: buyerUser._id,
+        buyerName: 'Bob Williams',
+        buyerUsername: 'bobw',
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        listingId: listing2._id,
+        listingTitle: listing2.title,
+        listingImage: 'https://example.com/products/hph-0002-1.png',
+        customSku: inventory2.sku,
+        pricing: {
+          itemPrice: 499000,
+          quantity: 1,
+          subtotal: 499000,
+          shippingCost: 0,
+          tax: 0,
+          total: 499000,
+          currency: 'VND'
+        },
+        shippingAddress: {
+          fullName: 'Bob Williams',
+          phone: '0987654321',
+          street: '321 Tech Park',
+          ward: 'Ward 2',
+          district: 'District 2',
+          city: 'Hanoi',
+          postalCode: '10000',
+          country: 'Vietnam'
+        },
+        status: 'awaiting_payment',
+        paymentStatus: 'pending',
+        paymentMethod: 'Bank Transfer',
+        purchaseDate: daysAgo(0),
+        paymentDueDate: new Date(now + 2 * 24 * 60 * 60 * 1000),
+      },
+      {
+        orderNumber: '25-09016-24735',
+        buyerId: buyerUser._id,
+        buyerName: 'Emma Davis',
+        buyerUsername: 'emma_d',
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        listingId: listing1._id,
+        listingTitle: listing1.title,
+        listingImage: 'https://example.com/products/hph-0001-1.png',
+        customSku: inventory1.sku,
+        pricing: {
+          itemPrice: 299000,
+          quantity: 1,
+          subtotal: 299000,
+          shippingCost: 30000,
+          tax: 0,
+          total: 329000,
+          currency: 'VND'
+        },
+        shippingAddress: {
+          fullName: 'Emma Davis',
+          phone: '0909999888',
+          street: '555 Oak St',
+          ward: 'Ward 7',
+          district: 'District 5',
+          city: 'Ho Chi Minh',
+          postalCode: '70000',
+          country: 'Vietnam'
+        },
+        status: 'cancelled',
+        paymentStatus: 'refunded',
+        paymentMethod: 'PayPal',
+        paymentDate: daysAgo(20),
+        purchaseDate: daysAgo(20),
+        refundInfo: {
+          amount: 329000,
+          reason: 'Customer changed mind',
+          refundDate: daysAgo(18),
+        }
+      },
+      {
+        orderNumber: '25-09016-24736',
+        buyerId: buyerUser._id,
+        buyerName: 'Michael Brown',
+        buyerUsername: 'mikeb',
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        listingId: listing2._id,
+        listingTitle: listing2.title,
+        listingImage: 'https://example.com/products/hph-0002-1.png',
+        customSku: inventory2.sku,
+        pricing: {
+          itemPrice: 499000,
+          quantity: 1,
+          subtotal: 499000,
+          shippingCost: 30000,
+          tax: 0,
+          total: 529000,
+          currency: 'VND'
+        },
+        shippingAddress: {
+          fullName: 'Michael Brown',
+          phone: '0988777666',
+          street: '777 Pine Ave',
+          ward: 'Ward 1',
+          district: 'District 1',
+          city: 'Da Nang',
+          postalCode: '50000',
+          country: 'Vietnam'
+        },
+        tracking: {
+          carrier: 'Giao Hang Nhanh',
+          trackingNumber: 'GHN111222333',
+          shippedDate: daysAgo(15),
+          estimatedDelivery: daysAgo(12),
+        },
+        status: 'returned',
+        paymentStatus: 'refunded',
+        paymentMethod: 'Credit Card',
+        paymentDate: daysAgo(16),
+        purchaseDate: daysAgo(16),
+        returnRequest: {
+          requested: true,
+          reason: 'Product defective',
+          requestDate: daysAgo(13),
+          status: 'completed'
+        },
+        refundInfo: {
+          amount: 529000,
+          reason: 'Product defective - returned',
+          refundDate: daysAgo(10),
+        }
+      },
+      {
+        orderNumber: '25-09016-24737',
+        buyerId: buyerUser._id,
+        buyerName: 'Sarah Miller',
+        buyerUsername: 'sarahm',
+        sellerId: sellerProfile._id,
+        storeId: store._id,
+        listingId: listing1._id,
+        listingTitle: listing1.title,
+        listingImage: 'https://example.com/products/hph-0001-1.png',
+        customSku: inventory1.sku,
+        pricing: {
+          itemPrice: 299000,
+          quantity: 1,
+          subtotal: 299000,
+          shippingCost: 30000,
+          tax: 0,
+          total: 329000,
+          currency: 'VND'
+        },
+        shippingAddress: {
+          fullName: 'Sarah Miller',
+          phone: '0977888999',
+          street: '888 Elm St',
+          ward: 'Ward 3',
+          district: 'District 7',
+          city: 'Ho Chi Minh',
+          postalCode: '70000',
+          country: 'Vietnam'
+        },
+        tracking: {
+          carrier: 'Vietnam Post',
+          trackingNumber: 'VNP444555666',
+          shippedDate: daysAgo(7),
+          estimatedDelivery: daysAgo(2),
+        },
+        status: 'delivery_failed',
+        paymentStatus: 'paid',
+        paymentMethod: 'COD',
+        purchaseDate: daysAgo(8),
+        sellerNotes: 'Customer not available at address, multiple delivery attempts failed'
+      },
+    ]);
+
+    console.log('📋 Seeded orders:', orders.length, 'orders created');
 
     console.log('✅ DONE SEEDING. Users password = "password123"');
   }
