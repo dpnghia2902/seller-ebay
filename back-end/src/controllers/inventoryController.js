@@ -13,6 +13,11 @@ const getStoreInventory = async (req, res) => {
       return res.status(404).json({ message: 'Store not found' });
     }
 
+    // Kiểm tra quyền sở hữu store (chỉ owner mới xem được inventory)
+    if (store.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: 'You do not have permission to view inventory for this store' });
+    }
+
     // Get all products for this store
     const products = await Product.find({ store_id: storeId });
     const productIds = products.map(p => p._id);
@@ -33,6 +38,23 @@ const updateInventory = async (req, res) => {
     const { inventoryId } = req.params;
     const { quantity, location } = req.body;
 
+    // Get inventory and populate product to get store_id
+    const inventory = await Inventory.findById(inventoryId).populate('product_id');
+    if (!inventory) {
+      return res.status(404).json({ message: 'Inventory not found' });
+    }
+
+    // Verify store ownership
+    const store = await Store.findById(inventory.product_id.store_id);
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
+    }
+
+    // Kiểm tra quyền sở hữu store
+    if (store.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: 'You do not have permission to update inventory for this store' });
+    }
+
     const updateData = { updated_at: Date.now() };
     
     if (quantity !== undefined) {
@@ -52,10 +74,6 @@ const updateInventory = async (req, res) => {
       { new: true }
     ).populate('product_id', 'title sku price');
 
-    if (!updatedInventory) {
-      return res.status(404).json({ message: 'Inventory not found' });
-    }
-
     res.status(200).json(updatedInventory);
   } catch (err) {
     res.status(400).json({ message: 'Error updating inventory', error: err.message });
@@ -70,6 +88,17 @@ const adjustProductStock = async (req, res) => {
 
     if (adjustment === undefined) {
       return res.status(400).json({ message: 'Adjustment value is required' });
+    }
+
+    // Verify store exists and check ownership
+    const store = await Store.findById(storeId);
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
+    }
+
+    // Kiểm tra quyền sở hữu store
+    if (store.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: 'You do not have permission to adjust stock for this store' });
     }
 
     // Verify product belongs to store
