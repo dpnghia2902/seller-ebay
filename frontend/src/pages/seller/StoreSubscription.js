@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-
+import { useAuth } from '../../context/AuthContext';
 const StoreSubscription = () => {
+    const { refreshUser } = useAuth();
+
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedPlan, setSelectedPlan] = useState(null);
@@ -25,12 +27,30 @@ const StoreSubscription = () => {
         }
     };
 
-    const handleSelectPlan = (plan) => {
+    const handleSelectPlan = async (plan) => {
         setSelectedPlan(plan);
-        // Navigate to store setup with selected plan
-        navigate('/seller/store/setup', {
-            state: { planId: plan._id, planName: plan.name, billingCycle }
-        });
+
+        try {
+            await refreshUser();
+
+            const verify = await api.get('/seller/profile').catch(() => null);
+            console.log(verify)
+            if (!verify?.data || verify?.data?.status !== 'verified') {
+                console.log('Navigating to verify due to unverified profile');
+                return navigate('/seller/verify', {
+                    state: { planId: plan._id, planName: plan.name, billingCycle }
+                });
+            }
+            console.log('Navigating to store setup');
+            navigate('/seller/store/setup', {
+                state: { planId: plan._id, planName: plan.name, billingCycle }
+            });
+        } catch (error) {
+            console.log(error);
+            navigate('/seller/verify', {
+                state: { planId: plan._id, planName: plan.name, billingCycle }
+            });
+        }
     };
 
     if (loading) {

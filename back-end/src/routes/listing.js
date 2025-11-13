@@ -12,8 +12,8 @@ router.get('/my-listings', auth, sellerCheck, async (req, res) => {
   try {
     const listings = await Listing.find({ sellerId: req.sellerId })
       .populate('categoryId')
-      .sort({ createdAt: -1 });
-
+      .sort({ createdAt: -1 }).lean();
+    console.log(listings);
     res.json(listings);
   } catch (error) {
     res.status(500).json({ message: error.message });
