@@ -16,6 +16,7 @@ import ListItemStart from './pages/seller/ListItemStart';
 import SellerListings from './pages/seller/SellerListings';
 import SellerListingsPage from './pages/seller/SellerListingsPage';
 import Orders from './pages/seller/Orders';
+import SellerReviews from './pages/seller/SellerReviews';
 
 function App() {
     return (
@@ -58,6 +59,14 @@ function App() {
                             element={
                                 <ProtectedRoute requireSeller requireVerified>
                                     <Orders />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/seller/reviews"
+                            element={
+                                <ProtectedRoute requireSeller requireVerified>
+                                    <SellerReviews />
                                 </ProtectedRoute>
                             }
                         />
