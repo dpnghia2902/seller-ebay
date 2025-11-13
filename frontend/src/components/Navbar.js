@@ -3,11 +3,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
+import api from '../services/api';
 const Navbar = () => {
   const { user, logout, isAuthenticated, isSeller } = useAuth();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -29,11 +28,15 @@ const Navbar = () => {
               <div className="flex space-x-4 text-gray-600">
                 {isAuthenticated ? (
                     <>
-                      {isSeller && (
-                          <Link to="/seller" className="hover:text-blue-600 font-medium">
-                            Sell
-                          </Link>
-                      )}
+                      <button onClick={() =>{
+                      if (isSeller) {
+                      navigate('/seller/store/subscription');}
+                      }
+                      } className="hover:text-blue-600"
+                      >
+                        Sell
+                      </button>
+
                       <Link to="/watchlist" className="hover:text-blue-600">Watchlist</Link>
                       <Link to="/my-ebay" className="hover:text-blue-600">My eBay</Link>
                       <button onClick={handleLogout} className="hover:text-blue-600">
@@ -115,11 +118,11 @@ const Navbar = () => {
               <Link to="/industrial" className="text-gray-700 hover:text-blue-600 whitespace-nowrap">Industrial equipment</Link>
               <Link to="/home" className="text-gray-700 hover:text-blue-600 whitespace-nowrap">Home & Garden</Link>
               <Link to="/deals" className="text-gray-700 hover:text-blue-600 whitespace-nowrap">Deals</Link>
-              {!isSeller && (
-                  <Link to="/register?role=seller" className="text-gray-700 hover:text-blue-600 whitespace-nowrap border-l pl-6">
-                    Sell
-                  </Link>
-              )}
+              {/*{!isSeller && (*/}
+              {/*    <Link to="/seller/store/subscription" className="text-gray-700 hover:text-blue-600 whitespace-nowrap border-l pl-6">*/}
+              {/*      Sell*/}
+              {/*    </Link>*/}
+              {/*)}*/}
             </div>
           </div>
         </div>

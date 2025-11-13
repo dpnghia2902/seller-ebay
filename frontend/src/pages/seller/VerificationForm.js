@@ -1,9 +1,8 @@
 // src/pages/seller/VerificationForm.js
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
-
 const VerificationForm = () => {
     const { user, refreshUser } = useAuth();
     const navigate = useNavigate();
@@ -22,7 +21,8 @@ const VerificationForm = () => {
         accountHolder: '',
         paypalEmail: '',
     });
-
+    const location = useLocation();
+    const { planId, planName, billingCycle } = location.state || {};
     useEffect(() => {
         loadSellerProfile();
     }, []);
@@ -83,9 +83,14 @@ const VerificationForm = () => {
 
             await api.post('/seller/verify', payload);
             await refreshUser();
+            if (planId) {
+                return navigate('/seller/store/setup', {
+                    state: { planId, planName, billingCycle }
+                });
+            }
 
-            alert('Verification request submitted successfully! We will review your information shortly.');
             navigate('/seller');
+            alert('Verification request submitted successfully! We will review your information shortly.');
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to submit verification');
         } finally {

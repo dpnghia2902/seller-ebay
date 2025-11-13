@@ -64,7 +64,7 @@ function App() {
                         <Route
                             path="/seller/store/subscription"
                             element={
-                                <ProtectedRoute requireSeller requireVerified>
+                                <ProtectedRoute requireSeller>
                                     <StoreSubscription />
                                 </ProtectedRoute>
                             }

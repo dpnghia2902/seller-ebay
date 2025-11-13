@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children, requireSeller, requireVerified }) => {
   }
 
   if (requireVerified && !isVerified) {
-    return <Navigate to="/seller/verify" replace />;
+    return <Navigate to="/seller/store/subscription" replace />;
   }
 
   return children;
