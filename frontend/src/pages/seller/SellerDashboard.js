@@ -210,6 +210,12 @@ const SellerDashboard = () => {
                     >
                         Orders
                     </Link>
+                    <Link
+                        to="/seller/reviews"
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded"
+                    >
+                        Customer Reviews
+                    </Link>
                     <button className="w-full text-left px-4 py-2 hover:bg-gray-50 rounded">
                         Unsold
                     </button>
