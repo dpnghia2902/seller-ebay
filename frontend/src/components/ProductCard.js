@@ -1,70 +1,84 @@
+// src/components/ProductCard.js
 import React from 'react';
-import { Link } from 'react-router-dom';
-import './ProductCard.css';
 
-const ProductCard = ({ product, onBuyClick }) => {
-  const discountedPrice = product.originalPrice
-    ? (product.originalPrice * (1 - product.discount / 100)).toFixed(2)
-    : product.price;
-
-  const handleBuyClick = (e) => {
-    e.preventDefault();
-    if (onBuyClick) {
-      onBuyClick(product);
-    }
+const ProductCard = ({ listing }) => {
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
   };
 
   return (
-    <div className="product-card">
-      <Link to={`/product/${product._id}`} className="product-card-link">
-        <div className="product-image">
-          {product.images && product.images.length > 0 ? (
-            <img src={product.images[0]} alt={product.title} />
+      <div className="bg-white rounded-lg border hover:shadow-xl transition-shadow cursor-pointer group overflow-hidden">
+        {/* Image Container */}
+        <div className="relative aspect-square bg-gray-100 overflow-hidden">
+          {listing.images && listing.images.length > 0 ? (
+              <img
+                  src={listing.images[0].url}
+                  alt={listing.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
           ) : (
-            <div className="no-image">No Image</div>
+              <div className="w-full h-full flex items-center justify-center">
+                <svg className="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
           )}
-          {product.discount > 0 && <span className="discount-badge">{product.discount}%</span>}
+
+          {/* Badges */}
+          {listing.isFeatured && (
+              <div className="absolute top-2 left-2">
+            <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+              20% OFF: TOPGIFTPICKS
+            </span>
+              </div>
+          )}
+
+          {/* Wishlist Button */}
+          <button className="absolute top-2 right-2 p-2 bg-white rounded-full shadow hover:bg-gray-100 transition opacity-0 group-hover:opacity-100">
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
         </div>
 
-        <div className="product-info">
-          <h3 className="product-title">{product.title}</h3>
+        {/* Product Info */}
+        <div className="p-4">
+          <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 text-sm group-hover:text-blue-600">
+            {listing.title}
+          </h3>
 
-          <div className="product-shop">
-            <span>🏪 {product.shop?.shopName}</span>
-          </div>
+          {listing.subtitle && (
+              <p className="text-xs text-gray-500 mb-2 line-clamp-1">{listing.subtitle}</p>
+          )}
 
-          <div className="product-price">
-            <span className="current-price">${discountedPrice}</span>
-            {product.originalPrice && (
-              <span className="original-price">${product.originalPrice}</span>
+          <div className="flex items-baseline gap-2 mb-2">
+          <span className="text-xl font-bold text-gray-900">
+            {formatPrice(listing.pricing.fixedPrice)}
+          </span>
+            {listing.isFeatured && (
+                <span className="text-xs text-gray-500 line-through">
+              {formatPrice(listing.pricing.fixedPrice * 1.25)}
+            </span>
             )}
           </div>
 
-          <div className="product-meta">
-            <span className="rating">⭐ {product.rating || 0}</span>
-            <span className="sold">Sold: {product.sold}</span>
-          </div>
+          {listing.condition && (
+              <p className="text-xs text-gray-500 mb-1 capitalize">
+                {listing.condition.replace(/_/g, ' ')}
+              </p>
+          )}
 
-          <div className="product-stock">
-            {product.stock > 0 ? (
-              <span className="in-stock">In Stock</span>
-            ) : (
-              <span className="out-stock">Out of Stock</span>
-            )}
+          <div className="flex items-center justify-between mt-3 pt-3 border-t">
+          <span className="text-xs text-gray-500">
+            {listing.totalQuantity} available
+          </span>
+            <span className="text-xs text-green-600 font-medium">Free shipping</span>
           </div>
         </div>
-      </Link>
-
-      {onBuyClick && (
-        <button
-          className="btn-buy"
-          onClick={handleBuyClick}
-          disabled={product.stock === 0}
-        >
-          {product.stock > 0 ? 'Buy Now' : 'Out of Stock'}
-        </button>
-      )}
-    </div>
+      </div>
   );
 };
 

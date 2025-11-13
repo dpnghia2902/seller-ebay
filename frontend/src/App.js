@@ -12,6 +12,9 @@ import ListingForm from './pages/seller/ListingForm';
 import VerificationForm from './pages/seller/VerificationForm';
 import StoreSubscription from './pages/seller/StoreSubscription';
 import StoreSetup from './pages/seller/StoreSetup';
+import ListItemStart from './pages/seller/ListItemStart';
+import SellerListings from './pages/seller/SellerListings';
+import SellerListingsPage from './pages/seller/SellerListingsPage';
 
 function App() {
     return (
@@ -62,6 +65,30 @@ function App() {
                             element={
                                 <ProtectedRoute requireSeller requireVerified>
                                     <StoreSetup />
+                                </ProtectedRoute>
+                            }
+                        />
+                        {/*<Route*/}
+                        {/*    path="/seller/listings"*/}
+                        {/*    element={*/}
+                        {/*        <ProtectedRoute requireSeller requireVerified>*/}
+                        {/*            <SellerListings />*/}
+                        {/*        </ProtectedRoute>*/}
+                        {/*    }*/}
+                        {/*/>*/}
+                        <Route
+                            path="/seller/list-item-start"
+                            element={
+                                <ProtectedRoute requireSeller requireVerified>
+                                    <ListItemStart />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/seller/listings"
+                            element={
+                                <ProtectedRoute requireSeller requireVerified>
+                                    <SellerListingsPage />
                                 </ProtectedRoute>
                             }
                         />

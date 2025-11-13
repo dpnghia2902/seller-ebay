@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+// models/Listing.js
 const ListingSchema = new Schema(
   {
     sellerId: { type: Schema.Types.ObjectId, ref: 'SellerProfile', required: true, index: true },
