@@ -2,51 +2,58 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './ProductCard.css';
 
-const ProductCard = ({ product, onBuyClick }) => {
-  const discountedPrice = product.originalPrice
-    ? (product.originalPrice * (1 - product.discount / 100)).toFixed(2)
-    : product.price;
+const ProductCard = ({ product, listing, onBuyClick }) => {
+  // Support both product and listing props
+  const item = product || listing;
+  
+  if (!item) {
+    return null; // Return null if no data is provided
+  }
+
+  const discountedPrice = item.originalPrice
+    ? (item.originalPrice * (1 - item.discount / 100)).toFixed(2)
+    : item.price || item.pricing?.fixedPrice || 0;
 
   const handleBuyClick = (e) => {
     e.preventDefault();
     if (onBuyClick) {
-      onBuyClick(product);
+      onBuyClick(item);
     }
   };
 
   return (
     <div className="product-card">
-      <Link to={`/product/${product._id}`} className="product-card-link">
+      <Link to={`/product/${item._id}`} className="product-card-link">
         <div className="product-image">
-          {product.images && product.images.length > 0 ? (
-            <img src={product.images[0]} alt={product.title} />
+          {item.images && item.images.length > 0 ? (
+            <img src={item.images[0]?.url || item.images[0]} alt={item.title} />
           ) : (
             <div className="no-image">No Image</div>
           )}
-          {product.discount > 0 && <span className="discount-badge">{product.discount}%</span>}
+          {item.discount > 0 && <span className="discount-badge">{item.discount}%</span>}
         </div>
 
         <div className="product-info">
-          <h3 className="product-title">{product.title}</h3>
+          <h3 className="product-title">{item.title}</h3>
 
           <div className="product-shop">
-            <span>🏪 {product.shop?.shopName}</span>
+            <span>🏪 {item.shop?.shopName || 'Store'}</span>
           </div>
 
           <div className="product-price">
             <span className="current-price">${discountedPrice}</span>
-            {product.originalPrice && (
-              <span className="original-price">${product.originalPrice}</span>
+            {item.originalPrice && (
+              <span className="original-price">${item.originalPrice}</span>
             )}
           </div>
 
           <div className="product-meta">
-            <span className="rating">⭐ {product.rating || 0}</span>
-            <span className="sold">Sold: {product.sold}</span>
+            <span className="rating">⭐ {item.rating || 0}</span>
+            <span className="sold">Sold: {item.sold || 0}</span>
           </div>
 
           <div className="product-stock">
-            {product.stock > 0 ? (
+            {(item.stock || item.totalQuantity || 0) > 0 ? (
               <span className="in-stock">In Stock</span>
             ) : (
               <span className="out-stock">Out of Stock</span>
@@ -59,9 +66,9 @@ const ProductCard = ({ product, onBuyClick }) => {
         <button
           className="btn-buy"
           onClick={handleBuyClick}
-          disabled={product.stock === 0}
+          disabled={(item.stock || item.totalQuantity || 0) === 0}
         >
-          {product.stock > 0 ? 'Buy Now' : 'Out of Stock'}
+          {(item.stock || item.totalQuantity || 0) > 0 ? 'Buy Now' : 'Out of Stock'}
         </button>
       )}
     </div>

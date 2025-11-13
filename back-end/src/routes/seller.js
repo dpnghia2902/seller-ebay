@@ -4,6 +4,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const User = require('../models/User');
 const SellerProfile = require('../models/SellerProfile');
+const orderController = require('../controllers/orderController');
 
 // Get seller profile
 router.get('/profile', auth, async (req, res) => {
@@ -79,5 +80,12 @@ router.post('/verify', auth, async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+// Order management routes
+router.get('/orders', auth, orderController.getSellerOrders);
+router.get('/orders/stats', auth, orderController.getOrderStats);
+router.get('/orders/:orderId', auth, orderController.getOrderById);
+router.put('/orders/:orderId/status', auth, orderController.updateOrderStatus);
+router.post('/orders/:orderId/tracking', auth, orderController.addTracking);
 
 module.exports = router;
