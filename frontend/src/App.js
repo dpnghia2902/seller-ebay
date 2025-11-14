@@ -33,7 +33,7 @@ function App() {
                         <Route
                             path="/seller"
                             element={
-                                <ProtectedRoute requireSeller>
+                                <ProtectedRoute>
                                     <SellerDashboard />
                                 </ProtectedRoute>
                             }
@@ -41,7 +41,7 @@ function App() {
                         <Route
                             path="/seller/verify"
                             element={
-                                <ProtectedRoute requireSeller>
+                                <ProtectedRoute>
                                     <VerificationForm />
                                 </ProtectedRoute>
                             }
@@ -49,7 +49,7 @@ function App() {
                         <Route
                             path="/seller/list-item"
                             element={
-                                <ProtectedRoute requireSeller requireVerified>
+                                <ProtectedRoute requireVerified>
                                     <ListingForm />
                                 </ProtectedRoute>
                             }
@@ -57,7 +57,7 @@ function App() {
                         <Route
                             path="/seller/orders"
                             element={
-                                <ProtectedRoute requireSeller requireVerified>
+                                <ProtectedRoute requireVerified>
                                     <Orders />
                                 </ProtectedRoute>
                             }
@@ -65,7 +65,7 @@ function App() {
                         <Route
                             path="/seller/reviews"
                             element={
-                                <ProtectedRoute requireSeller requireVerified>
+                                <ProtectedRoute requireVerified>
                                     <SellerReviews />
                                 </ProtectedRoute>
                             }
@@ -73,7 +73,7 @@ function App() {
                         <Route
                             path="/seller/store/subscription"
                             element={
-                                <ProtectedRoute requireSeller>
+                                <ProtectedRoute>
                                     <StoreSubscription />
                                 </ProtectedRoute>
                             }
@@ -81,7 +81,7 @@ function App() {
                         <Route
                             path="/seller/store/setup"
                             element={
-                                <ProtectedRoute requireSeller requireVerified>
+                                <ProtectedRoute requireVerified>
                                     <StoreSetup />
                                 </ProtectedRoute>
                             }
@@ -97,7 +97,7 @@ function App() {
                         <Route
                             path="/seller/list-item-start"
                             element={
-                                <ProtectedRoute requireSeller requireVerified>
+                                <ProtectedRoute requireVerified>
                                     <ListItemStart />
                                 </ProtectedRoute>
                             }
@@ -105,7 +105,7 @@ function App() {
                         <Route
                             path="/seller/listings"
                             element={
-                                <ProtectedRoute requireSeller requireVerified>
+                                <ProtectedRoute requireVerified>
                                     <SellerListingsPage />
                                 </ProtectedRoute>
                             }
