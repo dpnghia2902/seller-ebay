@@ -8,6 +8,10 @@ const ListingForm = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [uploadingImages, setUploadingImages] = useState(false);
+
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -34,27 +38,89 @@ const ListingForm = () => {
         }
     };
 
+    const handleImageSelect = (e) => {
+        const files = Array.from(e.target.files);
+
+        if (files.length + selectedFiles.length > 12) {
+            setError('Maximum 12 images allowed');
+            return;
+        }
+
+        // Validate file types and sizes
+        const validFiles = files.filter(file => {
+            const isValidType = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type);
+            const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
+
+            if (!isValidType) {
+                setError(`${file.name} is not a valid image type`);
+                return false;
+            }
+            if (!isValidSize) {
+                setError(`${file.name} exceeds 5MB limit`);
+                return false;
+            }
+            return true;
+        });
+
+        setSelectedFiles([...selectedFiles, ...validFiles]);
+
+        // Create previews
+        validFiles.forEach(file => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreviews(prev => [...prev, reader.result]);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        setError('');
+    };
+
+    const removeImage = (index) => {
+        setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
+        setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         try {
-            // Filter out empty item specifics
+            // Prepare form data
+            const submitData = new FormData();
+
+            // Add all form fields
+            submitData.append('title', formData.title);
+            submitData.append('subtitle', formData.subtitle);
+            submitData.append('categoryId', formData.categoryId);
+            submitData.append('condition', formData.condition);
+            submitData.append('description', formData.description);
+            submitData.append('inventorySku', formData.inventorySku);
+            submitData.append('fixedPrice', formData.fixedPrice);
+            submitData.append('totalQuantity', formData.totalQuantity);
+
+            // Filter and add item specifics
             const itemSpecifics = formData.itemSpecifics.filter(
                 spec => spec.name && spec.value
             );
+            submitData.append('itemSpecifics', JSON.stringify(itemSpecifics));
 
-            await api.post('/listing/create', {
-                ...formData,
-                itemSpecifics,
-                fixedPrice: parseFloat(formData.fixedPrice),
-                totalQuantity: parseInt(formData.totalQuantity),
+            // Add images
+            selectedFiles.forEach((file) => {
+                submitData.append('images', file);
+            });
+
+            const response = await api.post('/listing/create', submitData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
             alert('Listing created successfully!');
             navigate('/seller');
         } catch (err) {
+            console.error('Error creating listing:', err);
             setError(err.response?.data?.message || 'Failed to create listing');
         } finally {
             setLoading(false);
@@ -154,19 +220,70 @@ const ListingForm = () => {
                         </div>
                     </div>
 
-                    {/* Photos (Placeholder) */}
+                    {/* Photos */}
                     <div className="border-b pb-6">
-                        <h2 className="text-xl font-semibold mb-4">Photos & Media</h2>
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-                            <div className="text-gray-400 mb-2">
-                                <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                        <h2 className="text-xl font-semibold mb-4">
+                            Photos & Media <span className="text-red-500">*</span>
+                        </h2>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Add up to 12 photos. First photo will be the main image. (Max 5MB each, JPG/PNG/WEBP)
+                        </p>
+
+                        {/* Image Previews */}
+                        {imagePreviews.length > 0 && (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                {imagePreviews.map((preview, index) => (
+                                    <div key={index} className="relative group">
+                                        <img
+                                            src={preview}
+                                            alt={`Preview ${index + 1}`}
+                                            className="w-full h-32 object-cover rounded-lg border-2 border-gray-300"
+                                        />
+                                        {index === 0 && (
+                                            <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                                Main
+                                            </div>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(index)}
+                                            className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
-                            <p className="text-gray-600">Drag and drop files</p>
-                            <p className="text-sm text-gray-500 mt-1">
-                                (Photo upload feature - to be implemented)
-                            </p>
+                        )}
+
+                        {/* Upload Area */}
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-500 transition-colors">
+                            <input
+                                type="file"
+                                multiple
+                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                                onChange={handleImageSelect}
+                                className="hidden"
+                                id="image-upload"
+                                disabled={selectedFiles.length >= 12}
+                            />
+                            <label htmlFor="image-upload" className="cursor-pointer">
+                                <div className="text-gray-400 mb-2">
+                                    <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <p className="text-gray-600 font-medium">
+                                    {selectedFiles.length >= 12
+                                        ? 'Maximum images reached (12/12)'
+                                        : 'Click to upload or drag and drop'}
+                                </p>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    {selectedFiles.length}/12 images uploaded
+                                </p>
+                            </label>
                         </div>
                     </div>
 
@@ -297,7 +414,7 @@ const ListingForm = () => {
                         </div>
                     </div>
 
-                    {/* Shipping (Info only) */}
+                    {/* Shipping */}
                     <div className="border-b pb-6">
                         <h2 className="text-xl font-semibold mb-4">Shipping</h2>
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -337,7 +454,7 @@ const ListingForm = () => {
                         </button>
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || selectedFiles.length === 0}
                             className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 font-semibold"
                         >
                             {loading ? 'Creating Listing...' : 'List Item'}

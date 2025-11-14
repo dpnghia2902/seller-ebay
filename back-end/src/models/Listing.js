@@ -6,6 +6,13 @@ const ListingSchema = new Schema(
   {
     sellerId: { type: Schema.Types.ObjectId, ref: 'SellerProfile', required: true, index: true },
     storeId: { type: Schema.Types.ObjectId, ref: 'Store', index: true },
+    // Thêm phần images
+    images: [{
+      url: { type: String, required: true },
+      publicId: { type: String, required: true },
+      isPrimary: { type: Boolean, default: false },
+      order: { type: Number, default: 0 }
+    }],
     inventoryMode: {
       type: String,
       enum: ['single', 'variation'],
